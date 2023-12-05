@@ -1,15 +1,32 @@
-// import { Component } from 'react';
 import { useState } from 'react';
 import FormStyle from './ContactForm.styled';
+import { useDispatch, useSelector } from 'react-redux';
+import { nanoid } from 'nanoid';
 
-// const INITIAL_STATE = {
-//   name: '',
-//   number: '',
-// };
+import { addContact, getContacts } from 'redux/contactsSlice';
 
-export default function PokemonInfo({ addContact }) {
+export default function PokemonInfo() {
   const [name, setName] = useState('');
   const [number, setNumber] = useState('');
+  const dispatch = useDispatch();
+  const contacts = useSelector(getContacts);
+
+  const addContactFoo = contact => {
+    const isExist = contacts.some(
+      ({ name }) => name.toLowerCase() === contact.name.toLowerCase()
+    );
+    if (isExist) {
+      alert(`${contact.name} is already in contacts`);
+      return isExist;
+    }
+
+    const newContact = {
+      id: nanoid(),
+      ...contact,
+    };
+
+    dispatch(addContact(newContact));
+  };
 
   const handleChange = e => {
     const { value, name } = e.target;
@@ -29,7 +46,7 @@ export default function PokemonInfo({ addContact }) {
   const handleSubmit = e => {
     e.preventDefault();
 
-    const isExist = addContact({ name, number });
+    const isExist = addContactFoo({ name, number });
     if (!isExist) reset();
   };
 
@@ -65,55 +82,3 @@ export default function PokemonInfo({ addContact }) {
     </FormStyle>
   );
 }
-// export class ContactForm extends Component {
-//   state = {
-//     ...INITIAL_STATE,
-//   };
-
-//   handleChange = e => {
-//     const { value, name } = e.target;
-//     this.setState({ [name]: value });
-//   };
-
-//   handleSubmit = e => {
-//     e.preventDefault();
-
-//     const isExist = this.props.addContact(this.state);
-//     if (!isExist) this.reset();
-//   };
-
-//   reset = () => {
-//     this.setState({ ...INITIAL_STATE });
-//   };
-
-//   render() {
-//     const { name, number } = this.state;
-
-//     return (
-//       <FormStyle onSubmit={this.handleSubmit}>
-//         <label>
-//           Name
-//           <input
-//             type="text"
-//             name="name"
-//             value={name}
-//             required
-//             onChange={this.handleChange}
-//           />
-//         </label>
-//         <label>
-//           Number
-//           <input
-//             type="tel"
-//             name="number"
-//             value={number}
-//             required
-//             onChange={this.handleChange}
-//           />
-//         </label>
-
-//         <button type="submit">Add contact</button>
-//       </FormStyle>
-//     );
-//   }
-// }
